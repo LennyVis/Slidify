@@ -1,0 +1,79 @@
+---
+title       : "Car Accessability"
+subtitle    : 
+author      : 
+job         : 
+framework   : deckjs        # {io2012, html5slides, shower, dzslides, ...}
+highlighter : highlight.js  # {highlight.js, prettify, highlight}
+hitheme     : swiss      # 
+widgets     : []            # {mathjax, quiz, bootstrap}
+mode        : selfcontained # {standalone, draft}
+knit        : slidify::knit2slides
+---
+
+## Car Acceptability 
+
+
+--- .class #id
+
+## Introduction
+
+
+> * The data used in the project is retreived from car.data dataset provided in the R "datasets" package.
+> * There are 7 variables in the dataset (Car acceptability, Price, Doors, Persons, Space for luggage, Safety, Comfort)
+> * The number of observations is 1728
+
+
+```{r table, results='asis', warning=TRUE, echo=FALSE}
+library(knitr)
+
+carTable = read.table("assets/car.data", sep=",")
+carDS = as.data.frame(carTable)
+
+
+
+kable(head(carDS), format ="markdown", row.names=NA, caption="Except from the car acceptability dataset", col.names=c("|  Car acceptability  |", "|  Price   |", "|  Doors   |", "|  Persons   |", "|  Luggage Boot   |", "|  Safety   |", "|  Comfort   |"))
+#pander(head(carTable), style="rmarkdown", split.cells = Inf)
+
+colnames(carDS) = c("car_acceptability", "price", "doors", "persons", "lug_boot", "safety", "comfort")
+```
+
+--- .class #id
+
+## App features
+> * Easy to modify the model
+> * Option to modify the variables which are included in the model
+> * Max depth parameter for fine tuning the model
+> * Great way to visualize the solution
+> * Easy to determine which factors are important for determining the car accessability
+> * You can access the application by visiting: https://lennyvis.shinyapps.io/Specialization
+
+--- .class #id
+
+## Example of a visualized model
+```{r, cache=TRUE, warning=FALSE, echo=FALSE}
+
+library(shiny)
+library(caret)
+library(rattle)
+library(rpart)
+library(e1071)
+library(rpart.plot)
+library(datasets)
+
+cvCtrl <- trainControl(method = "cv", number=5, allowParallel = TRUE)
+gmbGrid = expand.grid(maxdepth=c(2:3))
+trainObjRPART = train(car_acceptability~., data=carDS, method="rpart2", trControl = cvCtrl, tuneGrid = gmbGrid)
+fancyRpartPlot(trainObjRPART$finalModel, main="Car acceptability", sub="")
+```
+
+--- .class #id
+
+## Conclusion
+
+> * Comfort is the most important parameter when determining the car acceptability level
+> * Changing the depth level for the tree affects the model
+> * The depth of the tree is affected by the number of parameters we choose
+
+
+--- .class #id
